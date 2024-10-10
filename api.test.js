@@ -1,7 +1,7 @@
 
 const request = require('supertest');
 const fs = require('fs-extra');
-const app = require('./app'); // Importa tu aplicación
+const app = require('./src/app'); // Importa tu aplicación
 
 const filePath = 'users.json';
 
