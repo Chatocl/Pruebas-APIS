@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": 1730255370825,
+    "nombre": "Luis Ramírez",
+    "correo": "luis.ramirez@example.com",
+    "contraseña": "Password1!",
+    "edad": 29,
+    "pais": "México"
+  },
+  {
+    "id": 1730255370886,
+    "nombre": "Juan Pérez",
+    "correo": "juan.perez@example.com",
+    "contraseña": "Password1!",
+    "edad": 30,
+    "pais": "Chile",
+    "telefono": "+56-123-456-7890"
+  },
+  {
+    "id": 1730255370912,
+    "nombre": "Luis García",
+    "correo": "luis.garcia@example.com",
+    "contraseña": "Password1!",
+    "pais": "España"
+  },
+  {
+    "id": 1730255370938,
+    "nombre": "Ana María López",
+    "correo": "ana.lopez@example.com",
+    "contraseña": "Password1!",
+    "edad": 25,
+    "pais": "Argentina"
+  },
+  {
+    "id": 1730255371023,
+    "nombre": "Pedro Junior",
+    "correo": "pedro.junior@example.com",
+    "contraseña": "Password1!",
+    "edad": 16,
+    "pais": "Chile"
+  }
+]

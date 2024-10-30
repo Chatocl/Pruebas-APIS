@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs-extra');
+const userService = require('./userservice'); // Importar el servicio de usuario
 const app = express();
 const port = 3000;
 
@@ -37,22 +38,7 @@ app.post('/usuarios', async (req, res) => {
   if (!nombre || !correo || !contraseña || !pais) {
     return res.status(400).json({ error: 'Campos obligatorios incompletos' });
   }
-  if (!/^[a-zA-Z\s]{3,}$/.test(nombre) || nombre.split(' ').length < 2) {
-    return res.status(400).json({ error: 'Nombre inválido' });
-  }
-  if (!/^\S+@\S+\.\S+$/.test(correo)) {
-    return res.status(400).json({ error: 'Correo inválido' });
-  }
-  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-])[A-Za-z\d@$!%*?&\-]{8,}$/.test(contraseña)) {
-    return res.status(400).json({ error: 'Contraseña inválida' });
-  }
-  if (edad && (edad < 18 || edad > 120)) {
-    return res.status(400).json({ error: 'Edad fuera de rango' });
-  }
-  if (telefono && !/^\+\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(telefono)) {
-    return res.status(400).json({ error: 'Número de teléfono inválido' });
-  }
-
+  
   try {
     const users = await fs.readJson(filePath);
 
@@ -67,6 +53,10 @@ app.post('/usuarios', async (req, res) => {
 
     // Guardar en el archivo
     await fs.writeJson(filePath, users, { spaces: 2 });
+
+    // Llamada al servicio para enviar un correo de bienvenida
+    await userService.sendWelcomeEmail(correo);
+
     res.status(201).json(newUser);
   } catch (err) {
     res.status(500).json({ error: 'Error al procesar el archivo' });
@@ -86,43 +76,13 @@ app.put('/usuarios/:id', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    // Validaciones y actualización de los campos
-    if (nombre) {
-      if (!/^[a-zA-Z\s]{3,}$/.test(nombre) || nombre.split(' ').length < 2) {
-        return res.status(400).json({ error: 'Nombre inválido' });
-      }
-      users[userIndex].nombre = nombre;
-    }
-    if (correo) {
-      if (!/^\S+@\S+\.\S+$/.test(correo)) {
-        return res.status(400).json({ error: 'Correo inválido' });
-      }
-      if (users.find(user => user.correo === correo && user.id !== userId)) {
-        return res.status(400).json({ error: 'El correo ya está registrado' });
-      }
-      users[userIndex].correo = correo;
-    }
-    if (contraseña) {
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-])[A-Za-z\d@$!%*?&\-]{8,}$/.test(contraseña)) {
-        return res.status(400).json({ error: 'Contraseña inválida' });
-      }
-      users[userIndex].contraseña = contraseña;
-    }
-    if (edad) {
-      if (edad < 18 || edad > 120) {
-        return res.status(400).json({ error: 'Edad fuera de rango' });
-      }
-      users[userIndex].edad = edad;
-    }
-    if (pais) {
-      users[userIndex].pais = pais;
-    }
-    if (telefono) {
-      if (!/^\+\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(telefono)) {
-        return res.status(400).json({ error: 'Número de teléfono inválido' });
-      }
-      users[userIndex].telefono = telefono;
-    }
+    // Actualización de los campos
+    if (nombre) users[userIndex].nombre = nombre;
+    if (correo) users[userIndex].correo = correo;
+    if (contraseña) users[userIndex].contraseña = contraseña;
+    if (edad) users[userIndex].edad = edad;
+    if (pais) users[userIndex].pais = pais;
+    if (telefono) users[userIndex].telefono = telefono;
 
     // Guardar el archivo actualizado
     await fs.writeJson(filePath, users, { spaces: 2 });
